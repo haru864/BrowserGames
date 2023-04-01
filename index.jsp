@@ -1,11 +1,18 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+pageEncoding="UTF-8" %>
 <!DOCTYPE>
 <html>
 <head>
-<title>Tetris Online</title>
+<title>Browser Games</title>
 </head>
 <body>
-<p>Let's play Tetris everywhere!</p>
-<a href="/TetrisOnline/ControlRequestServlet" action>GET Request to Servlet</a>
+<form action="/BrowserGames/ControlRequestServlet" method="GET">
+name:<br>
+<input type="text" name="name"><br>
+game:<br>
+Tetris<input type="radio" name="game" value="tetris"><br>
+Shooting<input type="radio" name="game" value="shooting"><br>
+<input type="submit" value="play">
+</form>
 </body>
 </html>
