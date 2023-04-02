@@ -97,6 +97,9 @@ let tetro_y = START_Y;
 // フィールド本体
 let field = [];
 
+//ゲームオーバーフラグ
+let over = false;
+
 // ######################## メイン処理 ########################
 // キャンバス要素を取得
 const cvs = document.getElementById("canvas");
@@ -108,7 +111,7 @@ cvs.height = SCREEN_HEIGHT;
 cvs.style.border = "4px solid #555";
 
 // テトロミノの落下ペースを設定
-setInterval(dropTetro, GAME_SPEED);
+let intervalID = setInterval(dropTetro, GAME_SPEED);
 
 // フィールド初期化
 initField();
@@ -118,6 +121,9 @@ drawAll();
 
 // キー押下のタイミングでテトロミノを移動させて再描画
 document.onkeydown = function (e) {
+    if (over === true) {
+        return;
+    }
     console.log(e.key);
     switch (e.key) {
         case 'a':
@@ -160,6 +166,19 @@ function drawAll() {
             }
         }
     }
+
+    if (over === true) {
+        let s = "GAME OVER";
+        ctx.font = "40px 'ＭＳ ゴシック'";
+        let w = ctx.measureText(s).width;
+        let x = SCREEN_WIDTH / 2 - w / 2;
+        let y = SCREEN_HEIGHT / 2 - 20;
+        ctx.lineWidth = 4;
+        ctx.strokeText(s, x, y);
+        ctx.fillStyle = "white";
+        ctx.fillText(s, x, y);
+        clearInterval(intervalID);
+    }
 }
 
 // フィールドを初期化する関数
@@ -170,9 +189,9 @@ function initField() {
             field[y][x] = -1;
         }
     }
-    // field[5][8] = 1;
-    // field[19][9] = 1;
-    // field[19][0] = 1;
+    field[5][8] = 1;
+    field[19][9] = 1;
+    field[19][0] = 1;
 }
 
 // ブロック一つを描画する関数
@@ -222,10 +241,14 @@ function dropTetro() {
         tetro_y++;
     } else {
         fixTetro();
+        checkLine();
         tetro_type = Math.floor(Math.random() * (TETRO_TYPES.length));
         tetro = TETRO_TYPES[tetro_type];
         tetro_x = START_X;
         tetro_y = START_Y;
+        if (!doConflict(0, 0)) {
+            over = true;
+        }
     }
     drawAll();
 }
@@ -239,4 +262,27 @@ function fixTetro() {
             }
         }
     }
+}
+
+//ラインが揃ったかチェックして消す関数
+function checkLine() {
+    let num_of_erasedline = 0;
+    for (let y = 0; y < FIELD_ROW; y++) {
+        let isFilledRow = true;
+        for (let x = 0; x < FIELD_COL; x++) {
+            if (field[y][x] < 0) {
+                isFilledRow = false;
+                break;
+            }
+        }
+        if (isFilledRow === true) {
+            num_of_erasedline++;
+            for (let ny = y; ny > 0; ny--) {
+                for (let nx = 0; nx < FIELD_COL; nx++) {
+                    field[ny][nx] = field[ny - 1][nx];
+                }
+            }
+        }
+    }
+    return num_of_erasedline;
 }
