@@ -19,6 +19,7 @@ public class ControlRequestServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         String game = req.getParameter("game");
         String name = req.getParameter("name");
+        // resp.setHeader("Cache-Control", "no-cache");
 
         if (StringUtils.isEmpty(game) || StringUtils.isEmpty(name)) {
             resp.sendRedirect("/BrowserGames/wrongrequest.html");
