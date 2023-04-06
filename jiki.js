@@ -19,7 +19,7 @@ class Jiki {
         this.x = (SCREEN_WIDTH / 2) << 8;
         this.y = (SCREEN_HEIGHT * 4 / 5) << 8;
         this.anime = 2;
-        this.speed = 512;
+        this.speed = 1024;
         this.firingInterval = 0;
         this.countOfShots = 0;
     }

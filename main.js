@@ -14,6 +14,9 @@ const DEBUG_FLUG = true;
 // スムージング
 const SMOOTHING = false;
 
+// スコア
+let score = 0;
+
 // カメラの座標
 let camera_x = 0;
 let camera_y = 0;
@@ -55,6 +58,9 @@ let enemies = [
     new Enemy(39, (SCREEN_WIDTH / 2) << 8, (SCREEN_HEIGHT * 2 / 5) << 8, 0, 0),
 ];
 
+// 敵の発射する弾を生成
+let enemyBullets = [];
+
 // ゲーム開始
 gameInit();
 
@@ -69,17 +75,24 @@ function gameInit() {
 // 星を動かす関数
 function gameLoop() {
 
+    if (rand(1, 20) == 1) {
+        enemies.push(new Enemy(39, rand(0, SCREEN_WIDTH) << 8, 0, 0, rand(300, 1200)));
+    }
+
     // オブジェクトの位置を更新
     updateAll();
 
     // キャンバスに描画
     drawAll();
 
+    // スコアを表示
+    context.font = "20px 'Impact'";
+    context.fillStyle = "white";
+    context.fillText("score:" + score, 10, 20);
+
     if (DEBUG_FLUG) {
-        context.font = "20px 'Impact'";
-        context.fillStyle = "white";
-        context.fillText("bullets:" + bullets.length, 10, 20);
-        context.fillText("enemies:" + enemies.length, 10, 40);
+        context.fillText("bullets:" + bullets.length, 10, 40);
+        context.fillText("enemies:" + enemies.length, 10, 60);
     }
 }
 
@@ -117,6 +130,7 @@ function updateAll() {
     updateObj(stars);
     updateObj(bullets);
     updateObj(enemies);
+    updateObj(enemyBullets);
     jiki.update();
 }
 
@@ -130,6 +144,7 @@ function drawAll() {
     drawObj(stars);
     drawObj(bullets);
     drawObj(enemies);
+    drawObj(enemyBullets);
     jiki.draw();
 
     // 自機の範囲 0 ～ FIELD_W
