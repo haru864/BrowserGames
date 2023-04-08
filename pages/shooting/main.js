@@ -88,13 +88,54 @@ function gameLoop() {
     drawAll();
 
     if (jiki.isDead && explosion.length == 0) {
-        // console.log(explosion.length);
-        // while (explosion.length > 0) {
-        //     updateAll();
-        //     drawAll();
-        // }
+
+        // ゲーム停止
         gameover();
         clearInterval(intervalId);
+
+        // スコアを送信するかチェック
+        let doSendScore;
+        let showConfirm = () => {
+
+            doSendScore = window.confirm('スコアを送信しますか？');
+
+            // スコアをバックエンドに送信
+            if (doSendScore) {
+                let user = (new URL(document.location)).searchParams.get('name');
+                let game = "Shooting";
+                let gameScore = score;
+                // console.log(user);
+                // console.log(game);
+                // console.log(gameScore);
+
+                var form = document.createElement('form');
+                var paramUser = document.createElement('input');
+                var paramGame = document.createElement('input');
+                var paramScore = document.createElement('input');
+
+                form.method = 'POST';
+                form.action = '/BrowserGames/ControlRequestServlet';
+
+                paramUser.type = 'hidden';
+                paramUser.name = 'user';
+                paramUser.value = user;
+                paramGame.type = 'hidden';
+                paramGame.name = 'game';
+                paramGame.value = game;
+                paramScore.type = 'hidden';
+                paramScore.name = 'score';
+                paramScore.value = gameScore;
+
+                form.appendChild(paramUser);
+                form.appendChild(paramGame);
+                form.appendChild(paramScore);
+                document.body.appendChild(form);
+
+                form.submit();
+            }
+        };
+        setTimeout(showConfirm, 1000);
+        // console.log('doSendScore: ' + doSendScore);
     }
 }
 
