@@ -9,7 +9,7 @@ const NUM_OF_STAR = 300;
 const GAME_SPEED = 1000 / 60;
 
 //デバッグのフラグ
-const DEBUG_FLUG = true;
+const DEBUG_FLUG = false;
 
 // スムージング
 const SMOOTHING = false;
@@ -54,9 +54,7 @@ let jiki = new Jiki();
 let bullets = [];
 
 // 敵を生成
-let enemies = [
-    new Enemy(39, (SCREEN_WIDTH / 2) << 8, (SCREEN_HEIGHT * 2 / 5) << 8, 0, 0),
-];
+let enemies = [];
 
 // 敵の発射する弾を生成
 let enemyBullets = [];
@@ -65,6 +63,7 @@ let enemyBullets = [];
 let explosion = [];
 
 // ゲーム開始
+let intervalId = 0;
 gameInit();
 
 // ゲーム初期化
@@ -72,7 +71,7 @@ function gameInit() {
     for (let i = 0; i < NUM_OF_STAR; i++) {
         stars[i] = new Star();
     }
-    setInterval(gameLoop, GAME_SPEED);
+    intervalId = setInterval(gameLoop, GAME_SPEED);
 }
 
 // 星を動かす関数
@@ -88,16 +87,14 @@ function gameLoop() {
     // キャンバスに描画
     drawAll();
 
-    // ステータスを表示
-    context.font = "20px 'Impact'";
-    context.fillStyle = "white";
-    context.fillText("score:" + score, 10, 20);
-    context.fillText("HP:" + jiki.hitPoints, 10, 40);
-
-    if (DEBUG_FLUG) {
-        context.fillText("bullet:" + bullets.length, 10, 100);
-        context.fillText("enemy:" + enemies.length, 10, 120);
-        context.fillText("enemyBullet:" + enemyBullets.length, 10, 140);
+    if (jiki.isDead && explosion.length == 0) {
+        // console.log(explosion.length);
+        // while (explosion.length > 0) {
+        //     updateAll();
+        //     drawAll();
+        // }
+        gameover();
+        clearInterval(intervalId);
     }
 }
 
@@ -152,7 +149,9 @@ function drawAll() {
     drawObj(enemies);
     drawObj(enemyBullets);
     drawObj(explosion);
-    jiki.draw();
+    if (!jiki.isDead) {
+        jiki.draw();
+    }
 
     // 自機の範囲 0 ～ FIELD_W
     // カメラの範囲 0 ～ (FIELD_W-SCREEN_W)
@@ -162,4 +161,29 @@ function drawAll() {
     // 仮想画面から実際のキャンバスにコピー
     context.drawImage(virtualCanvas, camera_x, camera_y, SCREEN_WIDTH, SCREEN_HEIGHT,
         0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    // ステータスを表示
+    context.font = "20px 'Impact'";
+    context.fillStyle = "white";
+    context.fillText("score:" + score, 10, 20);
+    context.fillText("HP:" + jiki.hitPoints, 10, 40);
+
+    if (DEBUG_FLUG) {
+        context.fillText("bullet:" + bullets.length, 10, 100);
+        context.fillText("enemy:" + enemies.length, 10, 120);
+        context.fillText("enemyBullet:" + enemyBullets.length, 10, 140);
+    }
+}
+
+// ゲームオーバー
+function gameover() {
+    let s = "GAME OVER";
+    context.font = "40px 'ＭＳ ゴシック'";
+    let w = context.measureText(s).width;
+    let x = SCREEN_WIDTH / 2 - w / 2;
+    let y = SCREEN_HEIGHT / 2 - 20;
+    context.lineWidth = 4;
+    context.strokeText(s, x, y);
+    context.fillStyle = "white";
+    context.fillText(s, x, y);
 }

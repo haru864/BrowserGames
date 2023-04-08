@@ -61,7 +61,7 @@ class Explosion extends CharaBase {
 
     draw() {
         this.spriteNumber = 16 + (this.count >> 2);
-        if (this.count >= 27) {
+        if (this.spriteNumber >= 27) {
             this.isDead = true;
             return;
         }

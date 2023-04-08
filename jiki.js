@@ -15,7 +15,6 @@ class Bullet extends CharaBase {
                 enemies[i].isDead = true;
                 this.isDead = true;
                 score++;
-                console.log(enemies[i].size);
                 // 敵の大きさに合わせて爆発エフェクトを大きくする
                 explosion.push(new Explosion(20, enemies[i].x, enemies[i].y, 0, 0));
                 for (let j = 1; j < enemies[i].size; j++) {
@@ -42,13 +41,20 @@ class Jiki {
         this.speed = 1024;
         this.firingInterval = 0;
         this.countOfShots = 0;
-        this.hitPoints = 10;
+        this.hitPoints = 3;
         this.w = sprites[this.anime].w;
         this.h = sprites[this.anime].h;
+        this.isDead = false;
     }
 
     // キーが押下されている場合は移動させる
     update() {
+        if (this.hitPoints <= 0 && !this.isDead) {
+            this.isDead = true;
+            this.explode();
+            return;
+        }
+
         if (keyboard.get('w')) {
             this.y -= this.speed;
         }
@@ -96,5 +102,15 @@ class Jiki {
     // キャンバスに自機を描画
     draw() {
         drawSprite(this.anime, this.x, this.y);
+    }
+
+    // 爆発
+    explode() {
+        for (let i = 0; i < 10; i++) {
+            let evx = (rand(-10, 10) << 5);
+            let evy = (rand(-10, 10) << 5);
+            explosion.push(new Explosion(20, this.x, this.y, evx, evy));
+        }
+        // console.log("boom!");
     }
 }
