@@ -6,6 +6,26 @@ class Bullet extends CharaBase {
 
     update() {
         super.update();
+        for (let i = 0; i < enemies.length; i++) {
+            if (enemies[i].isDead) {
+                continue;
+            }
+            if (checkHitRect(this.x, this.y, this.w, this.h,
+                enemies[i].x, enemies[i].y, enemies[i].w, enemies[i].h)) {
+                enemies[i].isDead = true;
+                this.isDead = true;
+                score++;
+                console.log(enemies[i].size);
+                // 敵の大きさに合わせて爆発エフェクトを大きくする
+                explosion.push(new Explosion(20, enemies[i].x, enemies[i].y, 0, 0));
+                for (let j = 1; j < enemies[i].size; j++) {
+                    let evx = (rand(-10, 10) << 5);
+                    let evy = (rand(-10, 10) << 5);
+                    explosion.push(new Explosion(20, enemies[i].x, enemies[i].y, evx, evy));
+                }
+                break;
+            }
+        }
     }
 
     draw() {
@@ -22,6 +42,9 @@ class Jiki {
         this.speed = 1024;
         this.firingInterval = 0;
         this.countOfShots = 0;
+        this.hitPoints = 10;
+        this.w = sprites[this.anime].w;
+        this.h = sprites[this.anime].h;
     }
 
     // キーが押下されている場合は移動させる

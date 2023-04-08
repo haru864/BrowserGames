@@ -61,6 +61,9 @@ let enemies = [
 // 敵の発射する弾を生成
 let enemyBullets = [];
 
+// 爆発エフェクトを生成
+let explosion = [];
+
 // ゲーム開始
 gameInit();
 
@@ -76,7 +79,7 @@ function gameInit() {
 function gameLoop() {
 
     if (rand(1, 20) == 1) {
-        enemies.push(new Enemy(39, rand(0, SCREEN_WIDTH) << 8, 0, 0, rand(300, 1200)));
+        enemies.push(new Enemy(rand(32, 77), rand(0, SCREEN_WIDTH) << 8, 0, 0, rand(300, 1200)));
     }
 
     // オブジェクトの位置を更新
@@ -85,14 +88,16 @@ function gameLoop() {
     // キャンバスに描画
     drawAll();
 
-    // スコアを表示
+    // ステータスを表示
     context.font = "20px 'Impact'";
     context.fillStyle = "white";
     context.fillText("score:" + score, 10, 20);
+    context.fillText("HP:" + jiki.hitPoints, 10, 40);
 
     if (DEBUG_FLUG) {
-        context.fillText("bullets:" + bullets.length, 10, 40);
-        context.fillText("enemies:" + enemies.length, 10, 60);
+        context.fillText("bullet:" + bullets.length, 10, 100);
+        context.fillText("enemy:" + enemies.length, 10, 120);
+        context.fillText("enemyBullet:" + enemyBullets.length, 10, 140);
     }
 }
 
@@ -112,7 +117,7 @@ function drawSprite(snum, x, y) {
 function updateObj(obj) {
     for (let i = obj.length - 1; i >= 0; i--) {
         obj[i].update();
-        if (obj[i].isOffScreen) {
+        if (obj[i].isDead) {
             obj.splice(i, 1);
         }
     }
@@ -131,6 +136,7 @@ function updateAll() {
     updateObj(bullets);
     updateObj(enemies);
     updateObj(enemyBullets);
+    updateObj(explosion);
     jiki.update();
 }
 
@@ -145,6 +151,7 @@ function drawAll() {
     drawObj(bullets);
     drawObj(enemies);
     drawObj(enemyBullets);
+    drawObj(explosion);
     jiki.draw();
 
     // 自機の範囲 0 ～ FIELD_W

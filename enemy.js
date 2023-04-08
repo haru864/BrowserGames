@@ -3,6 +3,13 @@ class Enemy extends CharaBase {
     constructor(snum, x, y, vx, vy) {
         super(snum, x, y, vx, vy);
         this.isCloseToJiki = false;
+        if (sprites[snum].x > 300) {
+            this.size = 10;
+        } else if (sprites[snum].x > 200) {
+            this.size = 5;
+        } else {
+            this.size = 1;
+        }
     }
 
     update() {
@@ -40,4 +47,17 @@ class Enemy extends CharaBase {
 
 class EnemyBullet extends CharaBase {
 
+    constructor(snum, x, y, vx, vy) {
+        super(snum, x, y, vx, vy);
+        this.power = 1;
+    }
+
+    update() {
+        super.update();
+        if (checkHitRect(this.x, this.y, this.w, this.h,
+            jiki.x, jiki.y, jiki.w, jiki.h)) {
+            this.isDead = true;
+            jiki.hitPoints -= this.power;
+        }
+    }
 }
