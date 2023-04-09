@@ -1,9 +1,11 @@
 package controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.tomcat.jakartaee.commons.lang3.StringUtils;
 
+import dao.ScoreDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -11,6 +13,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Score;
+import model.SelectLimit;
 
 @WebServlet("/ControlRequestServlet")
 public class ControlRequestServlet extends HttpServlet {
@@ -51,8 +55,25 @@ public class ControlRequestServlet extends HttpServlet {
         ServletContext servletContext = req.getServletContext();
         servletContext.log("[DEBUG]game:" + game + ", user:" + user + ", score:" + scoreInt);
 
+        int rank = -1;
+        List<Score> scoreList = null;
+        try {
+
+            ScoreDAO scoreDAO = new ScoreDAO();
+            Score score = new Score(user, game, scoreInt);
+            scoreDAO.upsertScore(score);
+            rank = scoreDAO.findRank(score);
+            scoreList = scoreDAO.findTopN(score, new SelectLimit(1000));
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        req.setAttribute("rank", Integer.valueOf(rank));
+        req.setAttribute("scorelist", scoreList);
+
         RequestDispatcher requestDispatcher = req.getRequestDispatcher(disp);
         requestDispatcher.forward(req, resp);
     }
-
 }

@@ -1,5 +1,10 @@
 // schema
-
+CREATE DATABASE browsergames;
 
 // table
-
+CREATE TABLE score (
+    user VARCHAR(10),
+    game VARCHAR(10),
+    score INT not null,
+    primary key(user, game)
+);

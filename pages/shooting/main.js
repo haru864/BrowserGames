@@ -102,7 +102,7 @@ function gameLoop() {
             // スコアをバックエンドに送信
             if (doSendScore) {
                 let user = (new URL(document.location)).searchParams.get('name');
-                let game = "Shooting";
+                let game = "shooting";
                 let gameScore = score;
                 // console.log(user);
                 // console.log(game);
