@@ -1,0 +1,23 @@
+table th {
+    padding: 5px 5px;
+}
+
+table td {
+    padding: 5px 5px;
+}
+
+table {
+    width: 300px;
+}
+
+#rank {
+    width: 20%;
+}
+
+#name {
+    width: 40%;
+}
+
+#score {
+    width: 40%;
+}

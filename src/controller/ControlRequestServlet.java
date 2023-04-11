@@ -57,13 +57,15 @@ public class ControlRequestServlet extends HttpServlet {
 
         int rank = -1;
         List<Score> scoreList = null;
+        int numOfUser = 0;
         try {
 
             ScoreDAO scoreDAO = new ScoreDAO();
             Score score = new Score(user, game, scoreInt);
             scoreDAO.upsertScore(score);
             rank = scoreDAO.findRank(score);
-            scoreList = scoreDAO.findTopN(score, new SelectLimit(1000));
+            scoreList = scoreDAO.findTopN(score, new SelectLimit(10));
+            numOfUser = scoreDAO.countAll(score);
 
         } catch (Exception e) {
 
@@ -72,6 +74,7 @@ public class ControlRequestServlet extends HttpServlet {
 
         req.setAttribute("rank", Integer.valueOf(rank));
         req.setAttribute("scorelist", scoreList);
+        req.setAttribute("num_of_user", numOfUser);
 
         RequestDispatcher requestDispatcher = req.getRequestDispatcher(disp);
         requestDispatcher.forward(req, resp);

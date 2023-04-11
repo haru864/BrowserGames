@@ -127,6 +127,12 @@ public class ScoreDAO {
         return score;
     }
 
+    /**
+     * ユーザが既に登録されているかどうかチェック
+     * 
+     * @param score 確認対象のスコア
+     * @return ユーザが登録済みであればtrue、それ以外はfalseを返す
+     */
     public boolean isRegistered(Score score) {
 
         boolean isRegistered = false;
@@ -150,5 +156,32 @@ public class ScoreDAO {
         }
 
         return isRegistered;
+    }
+
+    /**
+     * ゲームに応じて登録されているスコアの数を取得
+     * 
+     * @param score 確認対象のゲームに対応するスコア
+     * @return スコアを登録したユーザの数
+     */
+    public int countAll(Score score) {
+
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM score WHERE game = ?";
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS)) {
+
+            PreparedStatement pStmt = conn.prepareStatement(sql);
+            pStmt.setString(1, score.getGame());
+            ResultSet rs = pStmt.executeQuery();
+            rs.next();
+            count = rs.getInt(1);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return count;
     }
 }

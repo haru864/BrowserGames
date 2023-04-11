@@ -100,6 +100,9 @@ let field = [];
 //ゲームオーバーフラグ
 let over = false;
 
+// スコア
+let score = 0;
+
 // ######################## メイン処理 ########################
 // キャンバス要素を取得
 const cvs = document.getElementById("canvas");
@@ -124,7 +127,7 @@ document.onkeydown = function (e) {
     if (over === true) {
         return;
     }
-    console.log(e.key);
+    // console.log(e.key);
     switch (e.key) {
         case 'a':
         case 'ArrowLeft':
@@ -146,10 +149,12 @@ document.onkeydown = function (e) {
 }
 
 // ######################## 関数定義 ########################
-//背景とテトロミノを描画する関数
+// 背景とテトロミノを描画する関数
 function drawAll() {
+
     // 背景をクリアする
     ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
     // 設置されているテトロミノを描画する
     for (let y = 0; y < FIELD_ROW; y++) {
         for (let x = 0; x < FIELD_COL; x++) {
@@ -158,6 +163,7 @@ function drawAll() {
             }
         }
     }
+
     // 操作中のテトロミノを描画する
     for (let y = 0; y < TETRO_SIZE; y++) {
         for (let x = 0; x < TETRO_SIZE; x++) {
@@ -178,6 +184,46 @@ function drawAll() {
         ctx.fillStyle = "white";
         ctx.fillText(s, x, y);
         clearInterval(intervalID);
+
+        // スコアを送信するかチェック
+        let doSendScore;
+        let showConfirm = () => {
+
+            doSendScore = window.confirm('スコアを送信しますか？');
+
+            // スコアをバックエンドに送信
+            if (doSendScore) {
+                let user = (new URL(document.location)).searchParams.get('name');
+                let game = "tetris";
+                let gameScore = score;
+
+                var form = document.createElement('form');
+                var paramUser = document.createElement('input');
+                var paramGame = document.createElement('input');
+                var paramScore = document.createElement('input');
+
+                form.method = 'POST';
+                form.action = '/BrowserGames/ControlRequestServlet';
+
+                paramUser.type = 'hidden';
+                paramUser.name = 'user';
+                paramUser.value = user;
+                paramGame.type = 'hidden';
+                paramGame.name = 'game';
+                paramGame.value = game;
+                paramScore.type = 'hidden';
+                paramScore.name = 'score';
+                paramScore.value = gameScore;
+
+                form.appendChild(paramUser);
+                form.appendChild(paramGame);
+                form.appendChild(paramScore);
+                document.body.appendChild(form);
+
+                form.submit();
+            }
+        };
+        setTimeout(showConfirm, 1000);
     }
 }
 
@@ -189,9 +235,9 @@ function initField() {
             field[y][x] = -1;
         }
     }
-    field[5][8] = 1;
-    field[19][9] = 1;
-    field[19][0] = 1;
+    // field[5][8] = 1;
+    // field[19][9] = 1;
+    // field[19][0] = 1;
 }
 
 // ブロック一つを描画する関数
@@ -277,6 +323,7 @@ function checkLine() {
         }
         if (isFilledRow === true) {
             num_of_erasedline++;
+            score++;
             for (let ny = y; ny > 0; ny--) {
                 for (let nx = 0; nx < FIELD_COL; nx++) {
                     field[ny][nx] = field[ny - 1][nx];
@@ -284,5 +331,6 @@ function checkLine() {
             }
         }
     }
+    document.getElementById("currentScore").innerHTML = score;
     return num_of_erasedline;
 }

@@ -104,9 +104,6 @@ function gameLoop() {
                 let user = (new URL(document.location)).searchParams.get('name');
                 let game = "shooting";
                 let gameScore = score;
-                // console.log(user);
-                // console.log(game);
-                // console.log(gameScore);
 
                 var form = document.createElement('form');
                 var paramUser = document.createElement('input');
@@ -135,7 +132,6 @@ function gameLoop() {
             }
         };
         setTimeout(showConfirm, 1000);
-        // console.log('doSendScore: ' + doSendScore);
     }
 }
 
